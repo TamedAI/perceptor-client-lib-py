@@ -1,0 +1,4 @@
+# used when packaging to exclude directories
+prune */__pycache__
+prune test
+prune doc
