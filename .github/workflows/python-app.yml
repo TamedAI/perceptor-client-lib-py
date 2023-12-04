@@ -46,8 +46,8 @@ jobs:
     - name: Upload package artifact
       uses: actions/upload-artifact@v3
       with:
-        name: perceptor_client_lib-*
-        path: dist/
+        name: perceptor_client_lib-package
+        path: dist/*
 
 
     
