@@ -1,17 +1,18 @@
 /env/
 __pycache__/
-/.idea/
 /dist/
 /src/perceptor_logger_tamedai.egg-info/
 /ub_env/
 /win_env/
 .DS_Store
 /test/.DS_Store
+/.idea/
 
 /docker/service-account.json
 /test/example_invoice.png
 /src/perceptor_client_lib.egg-info/
 /Poppler_Bin/
 /_env/
-!/.idea/perceptor_client_py.iml
+!.idea/perceptor_client_py.iml
+!.idea/modules.xml
 /test/integration_tests/config.json
