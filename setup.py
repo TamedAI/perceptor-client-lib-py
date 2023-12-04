@@ -5,13 +5,13 @@ BASE_VERSION_NUMBER = "0.6"
 
 
 def get_ver_from_env():
-    if 'CI_JOB_ID' in os.environ:
-        return ".dev-" + os.environ['CI_JOB_ID']
-    return '.03'
+    if 'GITHUB_RUN_ID' in os.environ:
+        return ".dev-" + os.environ['GITHUB_RUN_ID']
+    return '.06'
 
 
-if os.environ.get('CI_COMMIT_TAG'):
-    version = os.environ['CI_COMMIT_TAG']
+if os.environ.get('SOURCE_TAG'):
+    version = os.environ['SOURCE_TAG']
 else:
     version = BASE_VERSION_NUMBER + get_ver_from_env()
 
