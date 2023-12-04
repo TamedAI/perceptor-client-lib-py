@@ -1,3 +1,4 @@
+import asyncio
 import unittest
 
 from perceptor_client_lib.content_session import _ContentSession, process_contents
@@ -22,7 +23,7 @@ class RepositoryMock(_PerceptorRepository):
 _mock_repository = RepositoryMock()
 
 
-class ContentSessionTests(unittest.TestCase):
+class ContentSessionTests(unittest.IsolatedAsyncioTestCase):
 
     @staticmethod
     def _create_default_request() -> PerceptorRequest:
@@ -53,7 +54,7 @@ class ContentSessionTests(unittest.TestCase):
                              instructions
                              )
 
-    def test_all_contents_are_processed_with_all_instructions(self):
+    async def test_all_contents_are_processed_with_all_instructions(self):
         data_contexts: list[InstructionContextData] = [
             ImageContextData(data_uri="some_uri_1"),
             ImageContextData(data_uri="some_uri_2"),
@@ -65,15 +66,15 @@ class ContentSessionTests(unittest.TestCase):
             "3"
         ]
 
-        result = process_contents(_mock_repository,
-                                  data_contexts,
-                                  self._create_default_request(),
-                                  InstructionMethod.QUESTION,
-                                  instructions,
-                                  classify_entries=[],
-                                  max_number_of_threads=4,
-                                  thread_delay_factor=0
-                                  )
+        result = await process_contents(_mock_repository,
+                                        data_contexts,
+                                        self._create_default_request(),
+                                        InstructionMethod.QUESTION,
+                                        instructions,
+                                        classify_entries=[],
+                                        max_number_of_threads=4,
+                                        thread_delay_factor=0
+                                        )
 
         self.assertEqual(len(result), len(data_contexts))
         for r in result:
@@ -105,17 +106,17 @@ class ContentSessionTests(unittest.TestCase):
         instructions = ["1"]
 
         def _call_method():
-            process_contents(_mock_repository,
-                             data_contexts,
-                             self._create_default_request(),
-                             InstructionMethod.CLASSIFY,
-                             instructions,
-                             classify_entries=["x"],
-                             max_number_of_threads=1,
-                             thread_delay_factor=0
-                             )
-        self.assertRaises(ValueError, _call_method)
+            asyncio.run(process_contents(_mock_repository,
+                                         data_contexts,
+                                         self._create_default_request(),
+                                         InstructionMethod.CLASSIFY,
+                                         instructions,
+                                         classify_entries=["x"],
+                                         max_number_of_threads=1,
+                                         thread_delay_factor=0
+                                         ))
 
+        self.assertRaises(ValueError, _call_method)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-# perceptor-client-lib-py
+# Perceptor Python Client
 
 ## Installing package
 
@@ -94,7 +94,7 @@ request = PerceptorRequest(flavor="original", return_scores=True, params={
 ### Sending instructions for text
 
 ```python
-result = perceptor_client.ask_text("text_to_process",
+result = await perceptor_client.ask_text("text_to_process",
                                        instructions=[
                                            "Question 1?",
                                            "Question 2",
@@ -115,7 +115,7 @@ Following image formats are supported: "_jpg_", "_png_".
 
 From image file:
 ```python
-result = perceptor_client.ask_image("path_to_image_file",
+result = await perceptor_client.ask_image("path_to_image_file",
                                        instructions=[
                                            "Question 1?",
                                            "Question 2",
@@ -135,7 +135,7 @@ or from image file:
 
 reader = open("image_path", 'rb')
 with reader:
-    result = perceptor_client.ask_image(reader,
+    result = await perceptor_client.ask_image(reader,
                                        instructions=[
                                            "Question 1?",
                                            "Question 2",
@@ -155,7 +155,7 @@ or from bytes:
 reader = open(_image_path, 'rb')
 with reader:
     content_bytes = reader.read()
-    result = perceptor_client.ask_image(content_bytes,
+    result = await perceptor_client.ask_image(content_bytes,
                                        instructions=[
                                            "Question 1?",
                                            "Question 2",
@@ -171,7 +171,7 @@ for instruction_result in result:
 Table queries can be performed as following:
 ```python
 
-result = perceptor_client.ask_table_from_image("path_to_image_file",
+result = await perceptor_client.ask_table_from_image("path_to_image_file",
                                        instruction="GENERATE TABLE Column1, Column2, Column3 GUIDED BY Column3",
                                                request_parameters=request
                                                )
@@ -181,7 +181,7 @@ result = perceptor_client.ask_table_from_image("path_to_image_file",
 
 From document file:
 ```python
-result = perceptor_client.ask_document("path_to_document_file",
+result = await perceptor_client.ask_document("path_to_document_file",
                                        instructions=[
                                            "Question 1?",
                                            "Question 2",
@@ -199,7 +199,7 @@ else:
 ### Sending classify instructions for text
 
 ```python
-result = perceptor_client.classify_text("text_to_process",
+result = await perceptor_client.classify_text("text_to_process",
                                         instruction="What kind of document is it?",
                                         classes=["invoice", "application"],
                                         request_parameters=request)

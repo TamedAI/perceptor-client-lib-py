@@ -1,3 +1,4 @@
+import asyncio
 import logging
 
 from perceptor_client_lib.external_models import PerceptorRequest
@@ -34,14 +35,18 @@ class_to_ask = [
     "letter",
     "brief"
 ]
-result = perceptor_client.classify_text(TEXT_TO_PROCESS,
-                                        instruction="was ist das für ein Text?",
-                                        request_parameters=req,
-                                        classes=class_to_ask)
-
-if result.is_success:
-    print(f"question '{result.instruction}', answer: '{result.response['scores']}'")
-else:
-    print(f"for question '{result.instruction}' following error occurred: {result.error_text}")
 
 
+async def run_client_method():
+    result = await perceptor_client.classify_text(TEXT_TO_PROCESS,
+                                                  instruction="was ist das für ein Text?",
+                                                  request_parameters=req,
+                                                  classes=class_to_ask)
+
+    if result.is_success:
+        print(f"question '{result.instruction}', answer: '{result.response['scores']}'")
+    else:
+        print(f"for question '{result.instruction}' following error occurred: {result.error_text}")
+
+
+asyncio.run(run_client_method())

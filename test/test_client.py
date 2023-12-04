@@ -28,8 +28,7 @@ def _create_client_with_mock_repository():
 _client_with_mock_repository = _create_client_with_mock_repository()
 
 
-class ClientMethodsTest(unittest.TestCase):
-
+class ClientMethodsTest(unittest.IsolatedAsyncioTestCase):
     @staticmethod
     def create_default_request():
         return PerceptorRequest.with_flavor("original")
@@ -57,81 +56,89 @@ class ClientMethodsTest(unittest.TestCase):
         self.assertTrue("request_url" in str(ctx.exception))
         pass
 
-    def test_ask_image_from_file(self):
+    async def test_ask_text(self):
         instructions = ["1", "2"]
-        result = _client_with_mock_repository.ask_image(_image_path, instructions=instructions,
-                                                        request_parameters=self.create_default_request())
+        result = await _client_with_mock_repository.ask_text("text_to_ask", instructions=instructions,
+                                                             request_parameters=self.create_default_request())
         self.assertEqual(len(result), len(instructions))
 
-    def test_ask_image_from_file_reader(self):
+    async def test_ask_image_from_file(self):
+        instructions = ["1", "2"]
+        result = await _client_with_mock_repository.ask_image(_image_path, instructions=instructions,
+                                                              request_parameters=self.create_default_request())
+        self.assertEqual(len(result), len(instructions))
+
+    async def test_ask_image_from_file_reader(self):
         instructions = ["1", "2"]
 
         reader = open(_image_path, 'rb')
         with reader:
-            result = _client_with_mock_repository.ask_image(reader, file_type="png",
-                                                            instructions=instructions,
-                                                            request_parameters=self.create_default_request())
+            result = await _client_with_mock_repository.ask_image(reader, file_type="png",
+                                                                  instructions=instructions,
+                                                                  request_parameters=self.create_default_request())
             self.assertEqual(len(result), len(instructions))
 
-    def test_ask_table_from_image_file(self):
+    async def test_ask_table_from_image_file(self):
         instruction = "instruction query text"
-        result = _client_with_mock_repository.ask_table_from_image(_image_path, instruction=instruction,
-                                                                   request_parameters=self.create_default_request())
+        result = await _client_with_mock_repository.ask_table_from_image(_image_path, instruction=instruction,
+                                                                         request_parameters=self.create_default_request())
         self.assert_response_text_equals(f"{instruction}  :: ok", result.response)
 
-    def test_ask_document_from_file(self):
+    async def test_ask_document_from_file(self):
         instructions = ["1", "2"]
-        image_results = _client_with_mock_repository.ask_document(_pdf_path, instructions=instructions,
-                                                                  request_parameters=self.create_default_request())
+        image_results = await _client_with_mock_repository.ask_document(_pdf_path, instructions=instructions,
+                                                                        request_parameters=self.create_default_request())
         self.assertEqual(len(image_results), EXPECTED_PDF_PAGES)
         for single_result in image_results:
             self.assertEqual(len(single_result.instruction_results), len(instructions))
 
-    def test_classify_document_from_file(self):
+    async def test_classify_document_from_file(self):
         instruction = "some instruction"
-        image_results = _client_with_mock_repository.classify_document(_pdf_path, instruction=instruction,
-                                                                       classes=["a", "b"],
-                                                                       request_parameters=self.create_default_request())
+        image_results = await _client_with_mock_repository.classify_document(_pdf_path, instruction=instruction,
+                                                                             classes=["a", "b"],
+                                                                             request_parameters=self.create_default_request())
         self.assertEqual(len(image_results), EXPECTED_PDF_PAGES)
 
-    def test_ask_document_images_from_files(self):
+    async def test_ask_document_images_from_files(self):
         file_paths = [_image_path, _invoice_path, _invoice_path]
         instructions = ["inst1", "inst no. 2"]
-        image_results = _client_with_mock_repository.ask_document_images(file_paths, instructions=instructions,
-                                                                         request_parameters=self.create_default_request())
+        image_results = await _client_with_mock_repository.ask_document_images(file_paths, instructions=instructions,
+                                                                               request_parameters=self.create_default_request())
         self.assertEqual(len(image_results), len(file_paths))
         self.assertEqual(image_results[0].page_number, 0)
         self.assertEqual(image_results[1].page_number, 1)
         for single_result in image_results:
             self.assertEqual(len(single_result.instruction_results), len(instructions))
 
-    def test_classify_document_images_from_files(self):
+    async def test_classify_document_images_from_files(self):
         file_paths = [_image_path, _invoice_path, _invoice_path]
         instruction = "some instruction"
         image_results = (
-            _client_with_mock_repository.classify_document_images(file_paths,
-                                                                  instruction=instruction,
-                                                                  classes=["a", "b"],
-                                                                  request_parameters=self.create_default_request()))
+            await _client_with_mock_repository.classify_document_images(file_paths,
+                                                                        instruction=instruction,
+                                                                        classes=["a", "b"],
+                                                                        request_parameters=self.create_default_request()))
         self.assertEqual(len(image_results), len(file_paths))
         self.assertEqual(image_results[0].page_number, 0)
         self.assertEqual(image_results[1].page_number, 1)
 
-    def test_ask_table_from_document_file(self):
+    async def test_ask_table_from_document_file(self):
         instruction = "instruction query text"
-        page_results = _client_with_mock_repository.ask_table_from_document(_pdf_path, instruction=instruction,
-                                                                            request_parameters=self.create_default_request())
+        page_results = await _client_with_mock_repository.ask_table_from_document(_pdf_path,
+                                                                                  instruction=instruction,
+                                                                                  request_parameters=self.create_default_request())
         self.assertEqual(len(page_results), EXPECTED_PDF_PAGES)
         for r in page_results:
             single_result = r.instruction_results
             self.assertEqual(True, single_result.is_success)
             self.assert_response_text_equals(f"{instruction}  :: ok", single_result.response)
 
-    def test_ask_table_from_document_images_from_files(self):
+    async def test_ask_table_from_document_images_from_files(self):
         file_paths = [_image_path, _invoice_path, _invoice_path]
         instruction = "instruction query text"
-        page_results = _client_with_mock_repository.ask_table_from_document_images(file_paths, instruction=instruction,
-                                                                                   request_parameters=self.create_default_request())
+        page_results = await _client_with_mock_repository.ask_table_from_document_images(file_paths,
+                                                                                         instruction=instruction,
+                                                                                         request_parameters=self.create_default_request())
         self.assertEqual(len(page_results), len(file_paths))
         for r in page_results:
             single_result = r.instruction_results

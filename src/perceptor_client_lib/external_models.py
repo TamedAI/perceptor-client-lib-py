@@ -2,7 +2,7 @@ from typing import Union, Optional
 
 from pydantic import BaseModel
 
-from perceptor_client_lib.structured_response_parser import parse_structured_text
+from perceptor_client_lib.structured_response_parser import _parse_structured_text
 
 
 class PerceptorRequest(BaseModel):
@@ -37,7 +37,7 @@ class InstructionWithResult(BaseModel):
     def success(instruction: str, response: str):
         return InstructionWithResult(instruction=instruction,
                                      is_success=True,
-                                     response=parse_structured_text(response))
+                                     response=_parse_structured_text(response))
 
     @staticmethod
     def error(instruction: str, error_text: str):

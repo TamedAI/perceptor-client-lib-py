@@ -84,15 +84,15 @@ def _map_classify_entries(string_list: list[str]):
     return list(map(lambda x: ClassifyEntry(x), string_list))
 
 
-def process_contents(repository: _PerceptorRepository,
-                     data_context: Union[InstructionContextData, list[InstructionContextData]],
-                     request: PerceptorRequest,
-                     method: InstructionMethod,
-                     instructions: Union[str, list[str]],
-                     classify_entries: list[str],
-                     max_number_of_threads: int,
-                     thread_delay_factor: float
-                     ) -> Union[InstructionWithResult, list[InstructionWithResult], list[DocumentImageResult]]:
+async def process_contents(repository: _PerceptorRepository,
+                           data_context: Union[InstructionContextData, list[InstructionContextData]],
+                           request: PerceptorRequest,
+                           method: InstructionMethod,
+                           instructions: Union[str, list[str]],
+                           classify_entries: list[str],
+                           max_number_of_threads: int,
+                           thread_delay_factor: float
+                           ) -> Union[InstructionWithResult, list[InstructionWithResult], list[DocumentImageResult]]:
     if method == InstructionMethod.CLASSIFY and len(classify_entries) < 2:
         raise ValueError("number of classes must be > 1")
 
@@ -114,10 +114,12 @@ def process_contents(repository: _PerceptorRepository,
         page_index, ctx = context_info
         context_data: InstructionContextData = ctx
         single_session = _ContentSession(repository, context_data, thread_delay_factor)
-        request_instruction_result \
-            = single_session.process_instructions_request(request, method, instructions,
-                                                          _map_classify_entries(classify_entries),
-                                                          max_number_of_threads)
+
+        request_instruction_result = single_session.process_instructions_request(
+            request, method, instructions,
+            _map_classify_entries(classify_entries),
+            max_number_of_threads)
+
         return DocumentImageResult(page_number=page_index,
                                    instruction_results=request_instruction_result)
 

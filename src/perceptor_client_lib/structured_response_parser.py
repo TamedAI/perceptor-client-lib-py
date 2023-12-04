@@ -4,7 +4,7 @@ from json import JSONDecodeError
 _KEY_NAME_TEXT: str = "text"
 
 
-def parse_structured_text(to_parse: str) -> dict:
+def _parse_structured_text(to_parse: str) -> dict:
     def create_dictionary_with_text():
         return dict(text=to_parse)
 

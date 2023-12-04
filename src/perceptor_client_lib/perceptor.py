@@ -1,3 +1,4 @@
+import asyncio
 from io import BufferedReader
 from typing import Optional
 from os import environ
@@ -71,8 +72,8 @@ class Client:
         self._max_level_of_parallelization = max_level_of_parallelization
         self._thread_delay_factor: float = thread_delay_factor
 
-    def ask_text(self, text_to_process: str,
-                 instructions: list[str], request_parameters: PerceptorRequest) \
+    async def ask_text(self, text_to_process: str,
+                       instructions: list[str], request_parameters: PerceptorRequest) \
             -> list[InstructionWithResult]:
         """
         Sends instruction(s) for the specified text
@@ -82,21 +83,21 @@ class Client:
         :return: list of tuples containing instruction and InstructionResult.
                 InstructionResult can be either text or instance of InstructionError.
         """
-        return process_contents(self._repository,
-                                TextContextData(text_to_process),
-                                request_parameters,
-                                InstructionMethod.QUESTION,
-                                instructions,
-                                [],
-                                self._max_level_of_parallelization,
-                                self._thread_delay_factor
-                                )
+        return await process_contents(self._repository,
+                                      TextContextData(text_to_process),
+                                      request_parameters,
+                                      InstructionMethod.QUESTION,
+                                      instructions,
+                                      [],
+                                      self._max_level_of_parallelization,
+                                      self._thread_delay_factor
+                                      )
 
-    def classify_text(self,
-                      text_to_process: str,
-                      instruction: str,
-                      classes: list[str],
-                      request_parameters: PerceptorRequest) -> InstructionWithResult:
+    async def classify_text(self,
+                            text_to_process: str,
+                            instruction: str,
+                            classes: list[str],
+                            request_parameters: PerceptorRequest) -> InstructionWithResult:
         """
         Sends classify instruction for the specified text
         :param text_to_process: text to be processed.
@@ -105,20 +106,20 @@ class Client:
         :param request_parameters: request parameters.
         :return: tuple containing original instruction and InstructionResult.
         """
-        return process_contents(self._repository,
-                                TextContextData(text_to_process),
-                                request_parameters,
-                                InstructionMethod.CLASSIFY,
-                                instruction,
-                                classes,
-                                self._max_level_of_parallelization,
-                                self._thread_delay_factor
-                                )
+        return await process_contents(self._repository,
+                                      TextContextData(text_to_process),
+                                      request_parameters,
+                                      InstructionMethod.CLASSIFY,
+                                      instruction,
+                                      classes,
+                                      self._max_level_of_parallelization,
+                                      self._thread_delay_factor
+                                      )
 
-    def ask_image(self, image: Union[str, bytes, BufferedReader],
-                  instructions: list[str],
-                  request_parameters: PerceptorRequest,
-                  file_type: Optional[str] = None) -> list[InstructionWithResult]:
+    async def ask_image(self, image: Union[str, bytes, BufferedReader],
+                        instructions: list[str],
+                        request_parameters: PerceptorRequest,
+                        file_type: Optional[str] = None) -> list[InstructionWithResult]:
         """
         Sends instruction(s) for the specified image
         :param image: image to be processed. Either a path to file, opened file handle, or bytearray.
@@ -129,21 +130,21 @@ class Client:
                 InstructionResult can be either text or instance of InstructionError.
         """
         image_content_data = convert_image_to_contextdata(image, file_type=file_type)
-        return process_contents(self._repository,
-                                image_content_data,
-                                request_parameters,
-                                InstructionMethod.QUESTION,
-                                instructions,
-                                [],
-                                self._max_level_of_parallelization,
-                                self._thread_delay_factor
-                                )
+        return await process_contents(self._repository,
+                                      image_content_data,
+                                      request_parameters,
+                                      InstructionMethod.QUESTION,
+                                      instructions,
+                                      [],
+                                      self._max_level_of_parallelization,
+                                      self._thread_delay_factor
+                                      )
 
-    def classify_image(self, image: Union[str, bytes, BufferedReader],
-                       instruction: str,
-                       classes: list[str],
-                       request_parameters: PerceptorRequest,
-                       file_type: Optional[str] = None) -> InstructionWithResult:
+    async def classify_image(self, image: Union[str, bytes, BufferedReader],
+                             instruction: str,
+                             classes: list[str],
+                             request_parameters: PerceptorRequest,
+                             file_type: Optional[str] = None) -> InstructionWithResult:
         """
         Sends classify instruction for the specified image
         :param image: image to be processed. Either a path to file, opened file handle, or bytearray.
@@ -153,21 +154,21 @@ class Client:
         :param file_type: mandatory if image specified as handle or bytearray, must be either 'png' or 'jpg'.
         :return: tuple containing original instruction and InstructionResult.
         """
-        return process_contents(self._repository,
-                                convert_image_to_contextdata(image, file_type=file_type),
-                                request_parameters,
-                                InstructionMethod.CLASSIFY,
-                                instruction,
-                                classes,
-                                self._max_level_of_parallelization,
-                                self._thread_delay_factor
-                                )
+        return await process_contents(self._repository,
+                                      convert_image_to_contextdata(image, file_type=file_type),
+                                      request_parameters,
+                                      InstructionMethod.CLASSIFY,
+                                      instruction,
+                                      classes,
+                                      self._max_level_of_parallelization,
+                                      self._thread_delay_factor
+                                      )
 
-    def ask_table_from_image(self, image: Union[str, bytes, BufferedReader],
-                             instruction: str,
-                             request_parameters: PerceptorRequest,
-                             file_type: Optional[str] = None
-                             ) -> InstructionWithResult:
+    async def ask_table_from_image(self, image: Union[str, bytes, BufferedReader],
+                                   instruction: str,
+                                   request_parameters: PerceptorRequest,
+                                   file_type: Optional[str] = None
+                                   ) -> InstructionWithResult:
         """
         Sends a table instruction for the specified image.
         :param image: image to be processed. Either a path to file, opened file handle, or bytearray
@@ -177,19 +178,19 @@ class Client:
         :return: tuple containing original instruction and InstructionResult.
         """
         image_content_data = convert_image_to_contextdata(image, file_type=file_type)
-        return process_contents(self._repository,
-                                image_content_data,
-                                request_parameters,
-                                InstructionMethod.TABLE,
-                                instruction,
-                                [],
-                                self._max_level_of_parallelization,
-                                self._thread_delay_factor
-                                )
+        return await process_contents(self._repository,
+                                      image_content_data,
+                                      request_parameters,
+                                      InstructionMethod.TABLE,
+                                      instruction,
+                                      [],
+                                      self._max_level_of_parallelization,
+                                      self._thread_delay_factor
+                                      )
 
-    def ask_document(self, pdf_doc: Union[str, bytes, BufferedReader],
-                     instructions: list[str],
-                     request_parameters: PerceptorRequest) \
+    async def ask_document(self, pdf_doc: Union[str, bytes, BufferedReader],
+                           instructions: list[str],
+                           request_parameters: PerceptorRequest) \
             -> list[DocumentImageResult]:
         """
         Sends instruction(s) for the specified pdf document.
@@ -200,13 +201,14 @@ class Client:
             instruction and InstructionResult.
         """
 
-        return self._extract_and_process_images_from_document(pdf_doc, instructions, [], InstructionMethod.QUESTION,
-                                                              request_parameters)
+        return await self._extract_and_process_images_from_document(pdf_doc, instructions, [],
+                                                                    InstructionMethod.QUESTION,
+                                                                    request_parameters)
 
-    def classify_document(self, pdf_doc: Union[str, bytes, BufferedReader],
-                          instruction: str,
-                          classes: list[str],
-                          request_parameters: PerceptorRequest) \
+    async def classify_document(self, pdf_doc: Union[str, bytes, BufferedReader],
+                                instruction: str,
+                                classes: list[str],
+                                request_parameters: PerceptorRequest) \
             -> list[DocumentImageResult]:
         """
         Sends classify instruction for the specified pdf document.
@@ -217,13 +219,14 @@ class Client:
         :return: list (corresponding to document pages), with list of tuples containing
             instruction and InstructionResult.
         """
-        return self._extract_and_process_images_from_document(pdf_doc, instruction, classes, InstructionMethod.CLASSIFY,
-                                                              request_parameters)
+        return await self._extract_and_process_images_from_document(pdf_doc, instruction, classes,
+                                                                    InstructionMethod.CLASSIFY,
+                                                                    request_parameters)
 
-    def ask_document_images(self, image_list: Union[list[str], list[(bytes, str)], list[(BufferedReader, str)]],
-                            instructions: list[str],
-                            request_parameters: PerceptorRequest
-                            ) -> list[DocumentImageResult]:
+    async def ask_document_images(self, image_list: Union[list[str], list[(bytes, str)], list[(BufferedReader, str)]],
+                                  instructions: list[str],
+                                  request_parameters: PerceptorRequest
+                                  ) -> list[DocumentImageResult]:
         """
         Sends instruction(s) for the specified document's images.
         :param image_list: document images to be processed. Either list of file paths,
@@ -233,17 +236,18 @@ class Client:
         :return: list (corresponding to document pages), with list of tuples containing
             instruction and InstructionResult.
         """
-        return self._ask_document_images(image_list,
-                                         instructions,
-                                         [],
-                                         InstructionMethod.QUESTION,
-                                         request_parameters)
+        return await self._ask_document_images(image_list,
+                                               instructions,
+                                               [],
+                                               InstructionMethod.QUESTION,
+                                               request_parameters)
 
-    def classify_document_images(self, image_list: Union[list[str], list[(bytes, str)], list[(BufferedReader, str)]],
-                                 instruction: str,
-                                 classes: list[str],
-                                 request_parameters: PerceptorRequest
-                                 ) -> list[DocumentImageResult]:
+    async def classify_document_images(self,
+                                       image_list: Union[list[str], list[(bytes, str)], list[(BufferedReader, str)]],
+                                       instruction: str,
+                                       classes: list[str],
+                                       request_parameters: PerceptorRequest
+                                       ) -> list[DocumentImageResult]:
         """
         Sends classify instruction for the specified images.
         :param image_list: document images to be processed. Either list of file paths,
@@ -254,15 +258,15 @@ class Client:
         :return: list (corresponding to images), with list of tuples containing
             instruction and InstructionResult.
         """
-        return self._ask_document_images(image_list,
-                                         instruction,
-                                         classes,
-                                         InstructionMethod.CLASSIFY,
-                                         request_parameters)
+        return await self._ask_document_images(image_list,
+                                               instruction,
+                                               classes,
+                                               InstructionMethod.CLASSIFY,
+                                               request_parameters)
 
-    def ask_table_from_document(self, pdf_doc: Union[str, bytes, BufferedReader],
-                                instruction: str,
-                                request_parameters: PerceptorRequest) -> list[DocumentImageResult]:
+    async def ask_table_from_document(self, pdf_doc: Union[str, bytes, BufferedReader],
+                                      instruction: str,
+                                      request_parameters: PerceptorRequest) -> list[DocumentImageResult]:
         """
         Sends a table instruction for the specified document.
         :param pdf_doc: document to be processed. Either a path to file, opened file handle, or bytearr
@@ -271,14 +275,15 @@ class Client:
         :return: list (corresponding to document pages), wish tuples containing original
             instruction and InstructionResult. InstructionResult can be either text or instance of InstructionError.
         """
-        return self._extract_and_process_images_from_document(pdf_doc, instruction, [], InstructionMethod.TABLE,
-                                                              request_parameters)
+        return await self._extract_and_process_images_from_document(pdf_doc, instruction, [], InstructionMethod.TABLE,
+                                                                    request_parameters)
 
-    def ask_table_from_document_images(self,
-                                       image_list: Union[list[str], list[(bytes, str)], list[(BufferedReader, str)]],
-                                       instruction: str,
-                                       request_parameters: PerceptorRequest
-                                       ) -> list[DocumentImageResult]:
+    async def ask_table_from_document_images(self,
+                                             image_list: Union[
+                                                 list[str], list[(bytes, str)], list[(BufferedReader, str)]],
+                                             instruction: str,
+                                             request_parameters: PerceptorRequest
+                                             ) -> list[DocumentImageResult]:
         """
         Sends a table instruction for the specified document's images.
         :param image_list: document images to be processed. Either list of file paths,
@@ -288,43 +293,40 @@ class Client:
         :return: list (corresponding to document pages), wish tuples containing original
             instruction and InstructionResult. InstructionResult can be either text or instance of InstructionError.
         """
-        return self._ask_document_images(image_list,
-                                         instruction,
-                                         [],
-                                         InstructionMethod.TABLE,
-                                         request_parameters)
+        return await self._ask_document_images(image_list,
+                                               instruction,
+                                               [],
+                                               InstructionMethod.TABLE,
+                                               request_parameters)
 
-    def _extract_and_process_images_from_document(self, pdf_doc: Union[str, bytes, BufferedReader],
-                                                  instruction: Union[str, list[str]],
-                                                  classes: list[str],
-                                                  method: InstructionMethod,
-                                                  request_parameters) \
+    async def _extract_and_process_images_from_document(self, pdf_doc: Union[str, bytes, BufferedReader],
+                                                        instruction: Union[str, list[str]],
+                                                        classes: list[str],
+                                                        method: InstructionMethod,
+                                                        request_parameters) \
             -> Union[list[InstructionWithResult], list[DocumentImageResult]]:
-        images = get_images_from_document_pages(pdf_doc)
+        images = await asyncio.create_task(get_images_from_document_pages(pdf_doc))
 
-        def map_image_func(i):
-            return i, "png"
+        mapped_images = list(map(lambda i: (i, "png"), images))
+        return await self._ask_document_images(mapped_images,
+                                               instruction,
+                                               classes,
+                                               method,
+                                               request_parameters)
 
-        mapped_images = list(map(map_image_func, images))
-        return self._ask_document_images(mapped_images,
-                                         instruction,
-                                         classes,
-                                         method,
-                                         request_parameters)
-
-    def _ask_document_images(self, image_list: Union[list[str], list[(bytes, str)], list[(BufferedReader, str)]],
-                             instructions: Union[str, list[str]],
-                             classes: list[str],
-                             method: InstructionMethod,
-                             request_parameters: PerceptorRequest,
-                             ) -> list[DocumentImageResult]:
+    async def _ask_document_images(self, image_list: Union[list[str], list[(bytes, str)], list[(BufferedReader, str)]],
+                                   instructions: Union[str, list[str]],
+                                   classes: list[str],
+                                   method: InstructionMethod,
+                                   request_parameters: PerceptorRequest,
+                                   ) -> list[DocumentImageResult]:
         mapped_images = parse_multiple_images(image_list)
-        return process_contents(self._repository,
-                                mapped_images,
-                                request_parameters,
-                                method,
-                                instructions,
-                                classes,
-                                self._max_level_of_parallelization,
-                                self._thread_delay_factor
-                                )
+        return await process_contents(self._repository,
+                                      mapped_images,
+                                      request_parameters,
+                                      method,
+                                      instructions,
+                                      classes,
+                                      self._max_level_of_parallelization,
+                                      self._thread_delay_factor
+                                      )

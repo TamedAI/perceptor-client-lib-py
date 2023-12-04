@@ -12,8 +12,14 @@ def _get_poppler_path() -> Optional[str]:
     return resolved_path
 
 
-def get_images_from_document_pages(file: Union[str, io.BufferedReader, bytes]) -> list[bytes]:
+async def get_images_from_document_pages(file: Union[str, io.BufferedReader, bytes]) -> list[bytes]:
     poppler_path = _get_poppler_path()
+
+    def get_bytes_from_image(im):
+        img_byte_arr = io.BytesIO()
+        im.save(img_byte_arr, format='PNG')
+        img_byte_arr = img_byte_arr.getvalue()
+        return img_byte_arr
 
     def get_images():
         if isinstance(file, io.BufferedReader):
@@ -26,12 +32,6 @@ def get_images_from_document_pages(file: Union[str, io.BufferedReader, bytes]) -
         return convert_from_path(file, poppler_path=poppler_path)
 
     images = get_images()
-
-    def get_bytes_from_image(im):
-        img_byte_arr = io.BytesIO()
-        im.save(img_byte_arr, format='PNG')
-        img_byte_arr = img_byte_arr.getvalue()
-        return img_byte_arr
 
     mapped = list(map(get_bytes_from_image, images))
 
