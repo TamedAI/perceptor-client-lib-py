@@ -40,5 +40,13 @@ jobs:
     - name: Test with pytest
       run: |
         pytest --no-header -v
-        
+    - name: Build package
+      run: python -m build
+    - name: Upload package artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: *
+        path: dist/
+
+
     
