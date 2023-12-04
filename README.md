@@ -239,3 +239,21 @@ _ask_document_images_<br>
 _ask_table_from_document_<br>
 _ask_table_from_document_images_<br>
 
+## Mapping response
+If you use the methods returning the list of _DocumentImageResult_ and need to have the responses grouped by instruction
+rather than page, you can use the provided utility function to map the response:
+
+```python
+mapped_result = group_by_instruction(result)
+for instruction_result in mapped_result:
+    print(f"""instruction: {instruction_result.instruction}""")
+    for page_result in instruction_result.page_results:
+        if page_result.is_success:
+            answer = page_result.response
+        else:
+            answer = f"error: {page_result}"
+        print(f"""
+            page: {page_result.page_number},
+            answer: {answer}
+            """)
+```

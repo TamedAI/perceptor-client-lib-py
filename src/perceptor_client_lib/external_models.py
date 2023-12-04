@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Union, Optional
 
 from pydantic import BaseModel
@@ -55,3 +56,36 @@ class DocumentImageResult(BaseModel):
     Instructions and corresponding results
     """
     instruction_results: Union[list[InstructionWithResult], InstructionWithResult]
+
+
+@dataclass
+class DocumentPageWithResult:
+    """
+    Zero based index of the original image/page
+    """
+    page_number: int
+    """
+    True if the request was successful
+    """
+    is_success: bool
+    """
+    Response dictionary containing at least "text" element, containing response text.
+    """
+    response: dict = field(default_factory=lambda: dict(text=""))
+    """
+    Error text (if error occurred, otherwise "")
+    """
+    error_text: Optional[str] = field(default_factory=lambda: "")
+
+
+@dataclass
+class InstructionWithPageResult:
+    """
+    Original instruction text
+    """
+    instruction: str
+
+    """
+    Pages and corresponding results
+    """
+    page_results: list[DocumentPageWithResult]

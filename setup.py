@@ -1,7 +1,7 @@
 from setuptools import setup
 import os
 
-BASE_VERSION_NUMBER = "0.6"
+BASE_VERSION_NUMBER = "0.6.1"
 
 
 def get_ver_from_env():
