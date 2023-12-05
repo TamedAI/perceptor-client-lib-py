@@ -31,12 +31,21 @@ jobs:
           tag_name: ${{ github.ref }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - name: upload artifact
+      - name: upload tar.gz artifact
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: dist/perceptor_client_lib-${{ github.ref_name }}.tar.gz
-          asset_name: perceptor_client_lib-package-${{ github.ref_name }}
+          asset_name: perceptor_client_lib-package-${{ github.ref_name }}.tar.gz
+          asset_content_type: application/gzip
+      - name: upload wheel artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/perceptor_client_lib-${{ github.ref_name }}-py3-none-any.whl
+          asset_name: perceptor_client_lib-package-${{ github.ref_name }}-py3-none-any.whl
           asset_content_type: application/gzip
