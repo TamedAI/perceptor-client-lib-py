@@ -6,7 +6,7 @@ BASE_VERSION_NUMBER = "0.6.1"
 
 def get_ver_from_env():
     if 'GITHUB_RUN_ID' in os.environ:
-        return ".dev-" + os.environ['GITHUB_RUN_ID']
+        return ".dev" + os.environ['GITHUB_RUN_ID']
     return '.06'
 
 
