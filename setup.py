@@ -10,6 +10,10 @@ def get_ver_from_env():
     return '.06'
 
 
+# tmp
+print("env_vars: ", os.environ)
+# tmp
+
 if os.environ.get('SOURCE_TAG'):
     version = os.environ['SOURCE_TAG']
 else:
