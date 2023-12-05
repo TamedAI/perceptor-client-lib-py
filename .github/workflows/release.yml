@@ -39,6 +39,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/*
-          asset_name: perceptor_client_lib-package
+          asset_path: dist/perceptor_client_lib-${{ github.ref }}
+          asset_name: perceptor_client_lib-package-${{ github.ref }}
           asset_content_type: application/gzip
