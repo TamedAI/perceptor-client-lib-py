@@ -34,8 +34,8 @@ class ClientMethodsTest(unittest.IsolatedAsyncioTestCase):
         return PerceptorRequest.with_flavor("original")
 
     @staticmethod
-    def _get_response_text(input: dict) -> str:
-        return input.get("text", "")
+    def _get_response_text(inp: dict) -> str:
+        return inp.get("text", "")
 
     def assert_response_text_equals(self, first: str, second: dict):
         self.assertEqual(first, self._get_response_text(second))

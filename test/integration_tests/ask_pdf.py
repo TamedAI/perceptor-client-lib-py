@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 from perceptor_client_lib.external_models import PerceptorRequest, InstructionWithResult
+from perceptor_client_lib.utils import group_by_instruction
 from tests_commons import create_client
 
 logging.basicConfig(level=logging.DEBUG)
@@ -46,6 +47,21 @@ async def run_client_method():
             instruction: {instruction_result.instruction}, 
             answer: {_get_answer(instruction_result)}
             """)
+
+    print("results grouped by instruction:")
+
+    mapped_result = group_by_instruction(result)
+    for instruction_result in mapped_result:
+        print(f"""instruction: {instruction_result.instruction}""")
+        for page_result in instruction_result.page_results:
+            if page_result.is_success:
+                answer = page_result.response
+            else:
+                answer = f"error: {page_result}"
+            print(f"""
+                page: {page_result.page_number},
+                answer: {answer}
+                """)
 
 
 asyncio.run(run_client_method())
