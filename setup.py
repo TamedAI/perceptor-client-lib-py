@@ -10,12 +10,8 @@ def get_ver_from_env():
     return '.06'
 
 
-# tmp
-print("env_vars: ", os.environ)
-# tmp
-
-if os.environ.get('SOURCE_TAG'):
-    version = os.environ['SOURCE_TAG']
+if os.environ.get('GITHUB_REF_TYPE') == "tag" and os.environ.get('GITHUB_REF_NAME'):
+    version = os.environ['GITHUB_REF_NAME']
 else:
     version = BASE_VERSION_NUMBER + get_ver_from_env()
 
