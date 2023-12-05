@@ -2,7 +2,11 @@
 
 ## Installing package
 
-to be described here
+Setup a virtual environment and run the following command to install the latest version:
+
+```bash
+pip install perceptor-client-lib@git+https://github.com/TamedAI/perceptor-client-lib-py
+```
 
 ## Installing _poppler_
 If you want to use pdf processing functionality, [follow this instructions](https://pypi.org/project/pdf2image/) to install _popppler_ on your machine.
