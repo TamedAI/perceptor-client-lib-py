@@ -16,19 +16,8 @@ On Windows, if the poppler "bin" path is not added to PATH, you have to set the 
 
 
 Create the client first:
-
 ```python
-import perceptor_client_lib.perceptor as perceptor
-
-API_KEY = "your_api_key"
-
-perceptor_client = perceptor.Client(api_key=API_KEY)
-
-```
-
-optionally, another url can be specified:
-```python
-perceptor_client = perceptor.Client(api_key="your_key",request_url="another_url")
+perceptor_client = perceptor.Client(api_key="your_key",request_url="request_url")
 ```
 
 It is also possible to create _Client_ without specifying any parameters. In that case, following environment variables
