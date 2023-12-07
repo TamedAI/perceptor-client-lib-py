@@ -81,7 +81,7 @@ class UtilsTests(unittest.TestCase):
             self.assertEqual(len(inst_group_resp.page_results), len(to_map))
             page_results = list(map(lambda r: r.response, inst_group_resp.page_results))
             to_compare = list(map(lambda r: r.response,
-                               filter(lambda x: x.instruction == inst_group_resp.instruction, all_responses)))
+                                  filter(lambda x: x.instruction == inst_group_resp.instruction, all_responses)))
             self.assertListEqual(page_results, to_compare)
 
     def test_multiple_pages_response_with_single_instruction(self):

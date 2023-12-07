@@ -14,6 +14,7 @@
 
 import unittest
 from requests import Response
+# noinspection PyProtectedMember
 from perceptor_client_lib.perceptor_repository import _PerceptorRepositoryHttpClient
 
 

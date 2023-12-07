@@ -14,6 +14,7 @@
 
 import os
 import unittest
+# noinspection PyProtectedMember
 from perceptor_client_lib.image_parsing import convert_image_to_contextdata, _get_file_extension, _is_valid_file_type
 from parameterized import parameterized
 

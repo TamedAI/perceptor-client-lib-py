@@ -23,8 +23,8 @@ from perceptor_client_lib.perceptor_repository import _PerceptorRepository
 
 class _PerceptorRepositoryRetryDecorator(_PerceptorRepository):
     def __init__(self, decoree: _PerceptorRepository, max_retries: int = 3):
-        self._decoree:_PerceptorRepository = decoree
-        self._number_of_retries:int = max_retries
+        self._decoree: _PerceptorRepository = decoree
+        self._number_of_retries: int = max_retries
 
     def log_attempt_number(self, retry_state: RetryCallState):
         logger = logging.getLogger(self.__class__.__name__)

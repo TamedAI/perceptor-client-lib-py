@@ -14,9 +14,12 @@
 
 import unittest
 
+# noinspection PyProtectedMember
 from perceptor_client_lib.internal_models import PerceptorRepositoryRequest, InstructionContextData, \
     InstructionMethod, _InstructionResult, InstructionError, ClassifyEntry
+# noinspection PyProtectedMember
 from perceptor_client_lib.perceptor_repository import _PerceptorRepository
+# noinspection PyProtectedMember
 from perceptor_client_lib.perceptor_repository_retrydecorator import _PerceptorRepositoryRetryDecorator
 
 

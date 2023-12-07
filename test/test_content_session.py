@@ -14,12 +14,16 @@
 
 import asyncio
 import unittest
+from typing import Union
 
+# noinspection PyProtectedMember
 from perceptor_client_lib.content_session import _ContentSession, process_contents
 from perceptor_client_lib.external_models import PerceptorRequest, \
     DocumentImageResult, InstructionWithResult
+# noinspection PyProtectedMember
 from perceptor_client_lib.internal_models import PerceptorRepositoryRequest, TextContextData, InstructionContextData, \
     ImageContextData, InstructionMethod, _InstructionResult, InstructionError, ClassifyEntry
+# noinspection PyProtectedMember
 from perceptor_client_lib.perceptor_repository import _PerceptorRepository
 
 
@@ -92,7 +96,7 @@ class ContentSessionTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(len(result), len(data_contexts))
         for r in result:
-            rep: DocumentImageResult = r
+            rep: Union[InstructionWithResult, list[InstructionWithResult], list[DocumentImageResult]] = r
             self.assertEqual(len(rep.instruction_results), len(instructions))
 
     def test_WHEN_repository_returns_error_THEN_error_in_response(self):

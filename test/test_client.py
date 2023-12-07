@@ -16,8 +16,10 @@ import os
 import unittest
 
 from perceptor_client_lib.external_models import PerceptorRequest
+# noinspection PyProtectedMember
 from perceptor_client_lib.internal_models import PerceptorRepositoryRequest, _InstructionResult, ClassifyEntry
 from perceptor_client_lib.perceptor import Client
+# noinspection PyProtectedMember
 from perceptor_client_lib.perceptor_repository import _PerceptorRepository
 
 _image_path = os.path.join(os.path.dirname(__file__), "test_files", "binary_file.png")

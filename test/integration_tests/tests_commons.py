@@ -13,7 +13,8 @@
 #  limitations under the License.
 
 import json
-import sys, os
+import os
+import sys
 
 PROJECT_PATH = os.getcwd()
 SOURCE_PATH = os.path.join(
@@ -22,6 +23,7 @@ SOURCE_PATH = os.path.join(
 
 sys.path.append(SOURCE_PATH)
 #
+# noinspection PyPep8
 import perceptor_client_lib.perceptor as perceptor
 
 _CONF_PATH = "config.json"

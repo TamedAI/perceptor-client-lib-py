@@ -17,6 +17,7 @@ from string import Template
 
 from parameterized import parameterized
 
+# noinspection PyProtectedMember
 from perceptor_client_lib.structured_response_parser import _parse_structured_text, _KEY_NAME_TEXT
 
 

@@ -64,7 +64,7 @@ def _parse_image_from_bytes(content_bytes: bytes, file_type: str) -> ImageContex
 
 def parse_multiple_images(image_list: Union[list[str], list[(bytes, str)], list[(BufferedReader, str)]]) \
         -> list[ImageContextData]:
-    if len(image_list)==0:
+    if len(image_list) == 0:
         return []
 
     if all(isinstance(elem, str) for elem in image_list):
@@ -81,7 +81,7 @@ def parse_multiple_images(image_list: Union[list[str], list[(bytes, str)], list[
     if all(isinstance(elem, tuple) for elem in image_list):
         if all(isinstance(elem[0], bytes) and isinstance(elem[1], str) for elem in image_list):
             return list(map(call_parse_from_bytes, image_list))
-        if all(isinstance(elem[0],BufferedReader) and isinstance(elem[1], str) for elem in image_list):
+        if all(isinstance(elem[0], BufferedReader) and isinstance(elem[1], str) for elem in image_list):
             return list(map(call_parse_from_buffered_reader, image_list))
 
     raise Exception("invalid type of image list")

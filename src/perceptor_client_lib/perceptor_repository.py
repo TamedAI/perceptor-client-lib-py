@@ -52,9 +52,9 @@ class _PerceptorRepositoryHttpClient(_PerceptorRepository):
         return event.event == 'finished'
 
     def _create_body(self,
-                      request: PerceptorRepositoryRequest,
-                      instruction: str,
-                      classes: Union[list[ClassifyEntry], None]) -> dict:
+                     request: PerceptorRepositoryRequest,
+                     instruction: str,
+                     classes: Union[list[ClassifyEntry], None]) -> dict:
         result = {
             "flavor": request.flavor,
             "contextType": request.context_data.context_type,
