@@ -59,7 +59,7 @@ class Client:
     def __init__(self, api_key: str = None,
                  request_url: str = None,
                  wait_timeout: int = 60,
-                 max_level_of_parallelization: int = 10,
+                 max_level_of_parallelization: int = 3,
                  max_retries: int = 3,
                  thread_delay_factor: float = 0.005):
         """
