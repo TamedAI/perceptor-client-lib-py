@@ -60,6 +60,10 @@ class ClientMethodsTest(unittest.IsolatedAsyncioTestCase):
     def _create_client_for(api_key: str, api_url: str):
         Client(api_key, api_url)
 
+    def test_WHEN_creating_default_request_THEN_params_are_filled(self):
+        request = PerceptorRequest.with_flavor("original")
+        self.assertTrue(len(request.params.items()) > 0)
+
     def test_WHEN_apikey_missing_THEN_exception_is_thrown(self):
         with self.assertRaises(ValueError) as ctx:
             self._create_client_for("", "some_url")

@@ -22,7 +22,13 @@ from perceptor_client_lib.structured_response_parser import _parse_structured_te
 
 class PerceptorRequest(BaseModel):
     flavor: str
-    params: dict = {}
+    params: dict = dict(temperature=0.01,
+                        topK=10,
+                        topP=0.9,
+                        repetitionPenalty=1,
+                        lengthPenalty=1,
+                        penaltyAlpha=1,
+                        maxLength=512)
     return_scores: bool = False
 
     @staticmethod
