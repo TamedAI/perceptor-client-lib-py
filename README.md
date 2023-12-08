@@ -11,7 +11,7 @@ Get your API token by [signing in](https://platform.tamed.ai) and go to the API 
 ```python
 import perceptor_client_lib.perceptor as perceptor
 
-perceptor_client = perceptor.Client(api_key="API_TOKEN_HERE",request_url="https://perceptor-api.tamed.ai/1/model/")
+perceptor_client = perceptor.Client(api_key="API_TOKEN_HERE", request_url="https://perceptor-api.tamed.ai/1/model/")
 
 context = """
     Greetings traveler, my name is Perceptor. I was born in 2022 and I generate text from text or image context. Therefore, I am able to extract  information from documents. Just ask.
@@ -65,9 +65,8 @@ will be raised.
 Parameters are specified via _PerceptorRequest_ class.
 The structure of _PerceptorRequest_:
 
-&emsp;_flavor_ specifies request "flavor", for example "original". It's a mandatory value and has to be specified. You can find more information about flavors [here](#flavor).
-
-&emsp;_params_ is a dictionary of additional generation parameters, for example:
+- _flavor_ specifies request "flavor", for example "original". It's a mandatory value and has to be specified. You can find more information about flavors [here](#flavor).
+- _params_ is a dictionary of additional generation parameters, for example:
 ```python
 {
     "temperature": 0.01,
@@ -79,9 +78,7 @@ The structure of _PerceptorRequest_:
     "maxLength": 512
 }
 ```
-
-You can retrieve confident scores like this:
-
+- _return_scores_ controls the access to confident scores:
 ```python
 request = PerceptorRequest(flavor="original", return_scores=True)
 ```
