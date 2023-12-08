@@ -1,3 +1,17 @@
+#  Copyright 2023 TamedAI GmbH
+#  #
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#  #
+#      http://www.apache.org/licenses/LICENSE-2.0
+#  #
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
 import unittest
 from typing import Union
 
@@ -67,7 +81,7 @@ class UtilsTests(unittest.TestCase):
             self.assertEqual(len(inst_group_resp.page_results), len(to_map))
             page_results = list(map(lambda r: r.response, inst_group_resp.page_results))
             to_compare = list(map(lambda r: r.response,
-                               filter(lambda x: x.instruction == inst_group_resp.instruction, all_responses)))
+                                  filter(lambda x: x.instruction == inst_group_resp.instruction, all_responses)))
             self.assertListEqual(page_results, to_compare)
 
     def test_multiple_pages_response_with_single_instruction(self):

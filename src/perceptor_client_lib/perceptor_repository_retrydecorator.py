@@ -1,3 +1,17 @@
+#  Copyright 2023 TamedAI GmbH
+#  #
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#  #
+#      http://www.apache.org/licenses/LICENSE-2.0
+#  #
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
 from tenacity import *
 import logging
 import tenacity
@@ -9,8 +23,8 @@ from perceptor_client_lib.perceptor_repository import _PerceptorRepository
 
 class _PerceptorRepositoryRetryDecorator(_PerceptorRepository):
     def __init__(self, decoree: _PerceptorRepository, max_retries: int = 3):
-        self._decoree:_PerceptorRepository = decoree
-        self._number_of_retries:int = max_retries
+        self._decoree: _PerceptorRepository = decoree
+        self._number_of_retries: int = max_retries
 
     def log_attempt_number(self, retry_state: RetryCallState):
         logger = logging.getLogger(self.__class__.__name__)
