@@ -53,12 +53,12 @@ perceptor_client = perceptor.Client(api_key="your_key",request_url="request_url"
 ```
 
 It is also possible to create _Client_ without specifying any parameters. In that case, following environment variables
-will be used automatically:<br>
-_TAI_PERCEPTOR_BASE_URL_ for api url
-_TAI_PERCEPTOR_API_KEY_ for api key
+will be used automatically:
 
-If no configuration parameters are specified and the above mentioned env variables are missing then a _ValueError_ exception
-will be raised.
+- _TAI_PERCEPTOR_BASE_URL_ for api url
+- _TAI_PERCEPTOR_API_KEY_ for api key
+
+If no configuration parameters are specified and the above mentioned env variables are missing, a _ValueError_ exception will be raised.
 
 ### Request parameters
 
@@ -91,7 +91,7 @@ The perceptor client supports async access.
 result = await perceptor_client.ask_text("text_to_process", instructions=["Question 1?"], request_parameters=request)
 ```
 
-### Sending instructions for text
+### Ask text
 
 ```python
 result = await perceptor_client.ask_text("text_to_process",
@@ -109,11 +109,11 @@ for instruction_result in result:
 
 ```
 
-### Sending instructions for an image
+### Ask image
 
 Following image formats are supported: "_jpg_", "_png_".
 
-From image file:
+From image path:
 ```python
 result = await perceptor_client.ask_image("path_to_image_file",
                                        instructions=[
@@ -130,7 +130,7 @@ for instruction_result in result:
 
 ```
 
-or from image file:
+...or from image file:
 
 ```python
 
@@ -150,7 +150,7 @@ for instruction_result in result:
         print(f"for question '{instruction_result.instruction}' following error occurred: {instruction_result.error_text}"
 ```
 
-or from bytes:
+...or from bytes:
 ```python
 
 reader = open(_image_path, 'rb')
@@ -178,7 +178,7 @@ result = await perceptor_client.ask_table_from_image("path_to_image_file",
                                                )
 ```
 
-### Sending instructions for a pdf document
+### Ask PDF document
 
 From document file:
 ```python
@@ -196,7 +196,7 @@ else:
 
 ```
 
-### Sending classify instructions for text
+### Classify text
 
 ```python
 result = await perceptor_client.classify_text("text_to_process",
@@ -210,7 +210,7 @@ else:
     print(f"for question '{result.instruction}' following error occurred: {result.error_text}")
 ```
 
-### Reading response
+### Read response
 
 Basic class containing the processing result is _InstructionWithResult_ ([see here](/src/perceptor_client_lib/external_models.py)).
 
@@ -239,7 +239,7 @@ _ask_document_images_<br>
 _ask_table_from_document_<br>
 _ask_table_from_document_images_<br>
 
-### Mapping response
+### Map response
 If you use the methods returning the list of _DocumentImageResult_ and need to have the responses grouped by instruction
 rather than page, you can use the provided utility function to map the response:
 
