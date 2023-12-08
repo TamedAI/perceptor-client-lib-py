@@ -1,6 +1,37 @@
-# Perceptor Python Client
+# Perceptor Client
 
-## Installing package
+![Perceptor](perceptor_paper_stack.png)
+
+Perceptor is a multi modal large language model (LLM) focused on extracting information from document images or text. 
+
+## Quickstart
+
+Get your API token by [signing in](https://platform.tamed.ai) and go to the API tab.
+
+```python
+import perceptor_client_lib.perceptor as perceptor
+
+perceptor_client = perceptor.Client(api_key="API_TOKEN_HERE",request_url="https://perceptor-api.tamed.ai/1/model/")
+
+context = """
+    Greetings traveler, my name is Perceptor. I was born in 2022 and I generate text from text or image context. Therefore, I am able to extract  information from documents. Just ask.
+"""
+
+instructions = [
+    "When was Perceptor born?",
+    "What can Perceptor do?",
+]
+
+result = perceptor_client.ask_text(context, instructions=instructions, request_parameters=perceptor.PerceptorRequest(flavor="original"))
+
+for instruction_result in result:
+    if instruction_result.is_success:
+        print(f"Q: '{instruction_result.instruction}'\nA: '{instruction_result.response}'\n------")
+    else:
+        print(f"For question '{instruction_result.instruction}' the following error occurred: {instruction_result.error_text}")
+```
+
+## Installation
 
 Setup a virtual environment and run the following command to install the latest version:
 
@@ -8,14 +39,15 @@ Setup a virtual environment and run the following command to install the latest 
 pip install perceptor-client-lib@git+https://github.com/TamedAI/perceptor-client-lib-py
 ```
 
-## Installing _poppler_
-If you want to use pdf processing functionality, [follow this instructions](https://pypi.org/project/pdf2image/) to install _popppler_ on your machine.
+### Dependencies
+
+- (optional) _Poppler_: If you want to use pdf processing functionality, [follow this instructions](https://pypi.org/project/pdf2image/) to install _popppler_ on your machine.
 On Windows, if the poppler "bin" path is not added to PATH, you have to set the environment variable POPPLER_PATH to point to _bin_.
 
 ## Usage
 
+### Create client
 
-Create the client first:
 ```python
 perceptor_client = perceptor.Client(api_key="your_key",request_url="request_url")
 ```
@@ -28,15 +60,14 @@ _TAI_PERCEPTOR_API_KEY_ for api key
 If no configuration parameters are specified and the above mentioned env variables are missing then a _ValueError_ exception
 will be raised.
 
-
-### Creating request parameters
+### Request parameters
 
 Parameters are specified via _PerceptorRequest_ class.
 The structure of _PerceptorRequest_:
 
-&emsp;_flavor_ specifies request "flavor", for example "original". It's a mandatory value and has to be specified.
+&emsp;_flavor_ specifies request "flavor", for example "original". It's a mandatory value and has to be specified. You can find more information about flavors [here](#flavor).
 
-&emsp;_params_ is a dictionary of additional parameters, for example:
+&emsp;_params_ is a dictionary of additional generation parameters, for example:
 ```python
 {
     "temperature": 0.01,
@@ -49,39 +80,18 @@ The structure of _PerceptorRequest_:
 }
 ```
 
-
-Create request object specifying only the _flavor_ value:
+You can retrieve confident scores like this:
 
 ```python
-request = PerceptorRequest.with_flavor("flavor_name")
+request = PerceptorRequest(flavor="original", return_scores=True)
 ```
 
-Create request object specifying all the parameters explicitly:
+### Asynchronous access
+
+The perceptor client supports async access.
+
 ```python
-request = PerceptorRequest(flavor="original", params={
-    "temperature": 0.01,
-    "topK": 10,
-    "topP": 0.9,
-    "repetitionPenalty": 1,
-    "lengthPenalty": 1,
-    "penaltyAlpha": 1,
-    "maxLength": 512
-})
-
-```
-
-Create request object with parameters and to include return scores:
-```python
-request = PerceptorRequest(flavor="original", return_scores=True, params={
-    "temperature": 0.01,
-    "topK": 10,
-    "topP": 0.9,
-    "repetitionPenalty": 1,
-    "lengthPenalty": 1,
-    "penaltyAlpha": 1,
-    "maxLength": 512
-})
-
+result = await perceptor_client.ask_text("text_to_process", instructions=["Question 1?"], request_parameters=request)
 ```
 
 ### Sending instructions for text
@@ -124,6 +134,7 @@ for instruction_result in result:
 ```
 
 or from image file:
+
 ```python
 
 reader = open("image_path", 'rb')
@@ -188,7 +199,6 @@ else:
 
 ```
 
-
 ### Sending classify instructions for text
 
 ```python
@@ -203,7 +213,7 @@ else:
     print(f"for question '{result.instruction}' following error occurred: {result.error_text}")
 ```
 
-### Reading responses
+### Reading response
 
 Basic class containing the processing result is _InstructionWithResult_ ([see here](/src/perceptor_client_lib/external_models.py)).
 
@@ -232,7 +242,7 @@ _ask_document_images_<br>
 _ask_table_from_document_<br>
 _ask_table_from_document_images_<br>
 
-## Mapping response
+### Mapping response
 If you use the methods returning the list of _DocumentImageResult_ and need to have the responses grouped by instruction
 rather than page, you can use the provided utility function to map the response:
 
@@ -250,3 +260,24 @@ for instruction_result in mapped_result:
             answer: {answer}
             """)
 ```
+
+## Flavor
+
+A flavor is the specialization of the Perceptor model for a specific instruction set. 
+Usually, a flavor is created for a specific document type (e.g. invoices).
+With a custom flavor the model performance can be increased dramatically.
+At the same time, confidence scores are better aligned with correct answers.
+
+```python
+request = perceptor.PerceptorRequest(flavor="MY_FLAVOR")
+result = perceptor_client.ask_text("context text...", instructions=["Question 1", "Question 2"], request_parameters=request)
+```
+
+To create your own flavor you will need a small dataset (>50 documents) together with your instruction set and the correct answers. 
+Upload your dataset [here](https://platform.tamed.ai/app/data) and [reach out](mailto:sales@tamed.ai) to us to  access your custom flavor.
+
+## Links
+
+- [API documentation](https://platform.tamed.ai/app/api)
+- [Flavor training](https://platform.tamed.ai/app/data)
+- [Homepage](https://tamed.ai)
