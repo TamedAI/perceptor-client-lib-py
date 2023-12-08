@@ -10,6 +10,7 @@ Get your API token by [signing in](https://platform.tamed.ai) and go to the API 
 
 ```python
 import perceptor_client_lib.perceptor as perceptor
+import asyncio
 
 perceptor_client = perceptor.Client(api_key="API_TOKEN_HERE", request_url="https://perceptor-api.tamed.ai/1/model/")
 
@@ -22,7 +23,7 @@ instructions = [
     "What can Perceptor do?",
 ]
 
-result = perceptor_client.ask_text(context, instructions=instructions, request_parameters=perceptor.PerceptorRequest(flavor="original"))
+result = asyncio.run(perceptor_client.ask_text(context, instructions=instructions, request_parameters=perceptor.PerceptorRequest(flavor="original")))
 
 for instruction_result in result:
     if instruction_result.is_success:
