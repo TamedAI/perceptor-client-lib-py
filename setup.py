@@ -15,13 +15,13 @@
 from setuptools import setup
 import os
 
-BASE_VERSION_NUMBER = "1.0.0"
+BASE_VERSION_NUMBER = "1.1.0"
 
 
 def get_ver_from_env():
     if 'GITHUB_RUN_ID' in os.environ:
         return ".dev" + os.environ['GITHUB_RUN_ID']
-    return '.06'
+    return '.01'
 
 
 if os.environ.get('GITHUB_REF_TYPE') == "tag" and os.environ.get('GITHUB_REF_NAME'):
