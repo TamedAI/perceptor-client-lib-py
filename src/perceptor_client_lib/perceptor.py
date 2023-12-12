@@ -26,6 +26,7 @@ from perceptor_client_lib.pdf_parsing import get_images_from_document_pages
 from perceptor_client_lib.perceptor_repository import _PerceptorRepositoryHttpClient, \
     PerceptorRepositoryHttpClientSettings
 from perceptor_client_lib.perceptor_repository_retrydecorator import _PerceptorRepositoryRetryDecorator
+from perceptor_client_lib.task_limiter import TaskLimiter
 
 _ENV_VAR_BASE_URL = "TAI_PERCEPTOR_BASE_URL"
 _ENV_VAR_API_KEY = "TAI_PERCEPTOR_API_KEY"
@@ -87,6 +88,8 @@ class Client:
         self._max_level_of_parallelization = max_level_of_parallelization
         self._thread_delay_factor: float = thread_delay_factor
 
+        self._task_limiter = TaskLimiter(max_level_of_parallelization)
+
     async def ask_text(self, text_to_process: str,
                        instructions: list[str], request_parameters: PerceptorRequest) \
             -> list[InstructionWithResult]:
@@ -104,7 +107,7 @@ class Client:
                                       InstructionMethod.QUESTION,
                                       instructions,
                                       [],
-                                      self._max_level_of_parallelization,
+                                      self._task_limiter,
                                       self._thread_delay_factor
                                       )
 
@@ -127,7 +130,7 @@ class Client:
                                       InstructionMethod.CLASSIFY,
                                       instruction,
                                       classes,
-                                      self._max_level_of_parallelization,
+                                      self._task_limiter,
                                       self._thread_delay_factor
                                       )
 
@@ -151,7 +154,7 @@ class Client:
                                       InstructionMethod.QUESTION,
                                       instructions,
                                       [],
-                                      self._max_level_of_parallelization,
+                                      self._task_limiter,
                                       self._thread_delay_factor
                                       )
 
@@ -175,7 +178,7 @@ class Client:
                                       InstructionMethod.CLASSIFY,
                                       instruction,
                                       classes,
-                                      self._max_level_of_parallelization,
+                                      self._task_limiter,
                                       self._thread_delay_factor
                                       )
 
@@ -199,7 +202,7 @@ class Client:
                                       InstructionMethod.TABLE,
                                       instruction,
                                       [],
-                                      self._max_level_of_parallelization,
+                                      self._task_limiter,
                                       self._thread_delay_factor
                                       )
 
@@ -342,6 +345,6 @@ class Client:
                                       method,
                                       instructions,
                                       classes,
-                                      self._max_level_of_parallelization,
+                                      self._task_limiter,
                                       self._thread_delay_factor
                                       )

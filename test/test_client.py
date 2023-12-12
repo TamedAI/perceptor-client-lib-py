@@ -11,7 +11,6 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-
 import os
 import unittest
 
@@ -36,7 +35,7 @@ class RepositoryMock(_PerceptorRepository):
 
 
 def _create_client_with_mock_repository():
-    client = Client("api_key", "api_url")
+    client = Client("api_key", "api_url", max_level_of_parallelization=2)
     client._repository = RepositoryMock()
     return client
 
@@ -100,14 +99,17 @@ class ClientMethodsTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_ask_table_from_image_file(self):
         instruction = "instruction query text"
-        result = await _client_with_mock_repository.ask_table_from_image(_image_path, instruction=instruction,
-                                                                         request_parameters=self.create_default_request())
+        result = await (_client_with_mock_repository.
+                        ask_table_from_image(_image_path,
+                                             instruction=instruction,
+                                             request_parameters=self.create_default_request()))
         self.assert_response_text_equals(f"{instruction}  :: ok", result.response)
 
     async def test_ask_document_from_file(self):
         instructions = ["1", "2"]
-        image_results = await _client_with_mock_repository.ask_document(_pdf_path, instructions=instructions,
-                                                                        request_parameters=self.create_default_request())
+        image_results = await (_client_with_mock_repository
+                               .ask_document(_pdf_path, instructions=instructions,
+                                             request_parameters=self.create_default_request()))
         self.assertEqual(len(image_results), EXPECTED_PDF_PAGES)
         for single_result in image_results:
             self.assertEqual(len(single_result.instruction_results), len(instructions))

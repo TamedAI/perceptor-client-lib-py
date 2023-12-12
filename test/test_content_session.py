@@ -25,6 +25,7 @@ from perceptor_client_lib.internal_models import PerceptorRepositoryRequest, Tex
     ImageContextData, InstructionMethod, _InstructionResult, InstructionError, ClassifyEntry
 # noinspection PyProtectedMember
 from perceptor_client_lib.perceptor_repository import _PerceptorRepository
+from perceptor_client_lib.task_limiter import TaskLimiter
 
 
 class RepositoryMock(_PerceptorRepository):
@@ -44,12 +45,17 @@ _mock_repository = RepositoryMock()
 class ContentSessionTests(unittest.IsolatedAsyncioTestCase):
 
     @staticmethod
+    def _create_task_limiter() -> TaskLimiter:
+        return TaskLimiter(max_number_of_threads=4)
+
+    @staticmethod
     def _create_default_request() -> PerceptorRequest:
         return PerceptorRequest(flavor="flavour", params={})
 
-    def test_all_instructions_are_processed(self):
+    async def test_all_instructions_are_processed(self):
         content_session = _ContentSession(_mock_repository,
                                           TextContextData("some_text"),
+                                          self._create_task_limiter(),
                                           thread_delay_factor=0)
 
         instructions = [
@@ -57,11 +63,10 @@ class ContentSessionTests(unittest.IsolatedAsyncioTestCase):
             "2",
             "3"
         ]
-        result = content_session.process_instructions_request(request=self._create_default_request(),
-                                                              method=InstructionMethod.QUESTION,
-                                                              instructions=instructions,
-                                                              classify_entries=[],
-                                                              max_number_of_threads=4)
+        result = await content_session.process_instructions_request(request=self._create_default_request(),
+                                                                    method=InstructionMethod.QUESTION,
+                                                                    instructions=instructions,
+                                                                    classify_entries=[])
 
         self.assertEqual(len(result), len(instructions))
 
@@ -90,7 +95,7 @@ class ContentSessionTests(unittest.IsolatedAsyncioTestCase):
                                         InstructionMethod.QUESTION,
                                         instructions,
                                         classify_entries=[],
-                                        max_number_of_threads=4,
+                                        task_limiter=self._create_task_limiter(),
                                         thread_delay_factor=0
                                         )
 
@@ -99,21 +104,21 @@ class ContentSessionTests(unittest.IsolatedAsyncioTestCase):
             rep: Union[InstructionWithResult, list[InstructionWithResult], list[DocumentImageResult]] = r
             self.assertEqual(len(rep.instruction_results), len(instructions))
 
-    def test_WHEN_repository_returns_error_THEN_error_in_response(self):
+    async def test_WHEN_repository_returns_error_THEN_error_in_response(self):
         repository = RepositoryMock(error_response='some error')
         content_session = _ContentSession(repository,
                                           TextContextData("some_text"),
+                                          self._create_task_limiter(),
                                           thread_delay_factor=0)
         instructions = [
             "1",
             "2",
             "3"
         ]
-        result = content_session.process_instructions_request(request=self._create_default_request(),
-                                                              method=InstructionMethod.QUESTION,
-                                                              instructions=instructions,
-                                                              classify_entries=[],
-                                                              max_number_of_threads=4)
+        result = await content_session.process_instructions_request(request=self._create_default_request(),
+                                                                    method=InstructionMethod.QUESTION,
+                                                                    instructions=instructions,
+                                                                    classify_entries=[])
 
         self.assertEqual(len(result), len(instructions))
         for item in result:
@@ -130,7 +135,7 @@ class ContentSessionTests(unittest.IsolatedAsyncioTestCase):
                                          InstructionMethod.CLASSIFY,
                                          instructions,
                                          classify_entries=["x"],
-                                         max_number_of_threads=1,
+                                         task_limiter=self._create_task_limiter(),
                                          thread_delay_factor=0
                                          ))
 
