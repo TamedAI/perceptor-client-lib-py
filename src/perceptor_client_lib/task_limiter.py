@@ -12,7 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 import asyncio
-from typing import Coroutine
+from typing import Callable
 
 
 class TaskLimiter:
@@ -20,9 +20,12 @@ class TaskLimiter:
         self._sem = asyncio.Semaphore(max_number_of_threads)
         self._max_number_of_threads: int = max_number_of_threads
 
-    async def exec_task(self, to_exec: Coroutine):
-        async with self._sem:
-            return await to_exec
+    async def exec_task(self, to_exec: Callable):
+        async def _exec_within_sem():
+            async with self._sem:
+                return await to_exec()
+
+        return await asyncio.create_task(_exec_within_sem())
 
     def get_max_number_of_threads(self) -> int:
         return self._max_number_of_threads

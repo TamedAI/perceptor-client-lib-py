@@ -13,7 +13,6 @@
 #  limitations under the License.
 import asyncio
 import logging
-import time
 from typing import Union
 
 from perceptor_client_lib.external_models import PerceptorRequest, \
@@ -48,10 +47,15 @@ class _ContentSession:
 
         async def send_single_instruction(instruction_index: int, instruction: str) -> InstructionWithResult:
             task_delay = self._thread_delay_factor * (instruction_index % pool_size)
-            time.sleep(task_delay)
+            await asyncio.sleep(task_delay)
 
-            response = self._process_instruction(request, method, instruction,
+            def _proc_req():
+                return self._process_instruction(request, method, instruction,
                                                  classify_entries)
+            loop = asyncio.get_event_loop()
+            future1 = loop.run_in_executor(None, _proc_req)
+            response = await future1
+
             return response
 
         if isinstance(instructions, str):
@@ -59,7 +63,7 @@ class _ContentSession:
 
         instructions_list: list = list(enumerate(instructions))
 
-        task_list = map(lambda t: self._task_limiter.exec_task(send_single_instruction(t[0], t[1])), instructions_list)
+        task_list = [self._task_limiter.exec_task(lambda t2=ins: send_single_instruction(t2[0], t2[1])) for ins in instructions_list]
 
         results = await asyncio.gather(*task_list)
         # noinspection PyTypeChecker
@@ -107,11 +111,13 @@ async def process_contents(repository: _PerceptorRepository,
                            method: InstructionMethod,
                            instructions: Union[str, list[str]],
                            classify_entries: list[str],
-                           task_limiter: TaskLimiter,
+                           max_number_of_threads: int,
                            thread_delay_factor: float
                            ) -> Union[InstructionWithResult, list[InstructionWithResult], list[DocumentImageResult]]:
     if method == InstructionMethod.CLASSIFY and len(classify_entries) < 2:
         raise ValueError("number of classes must be > 1")
+
+    task_limiter = TaskLimiter(max_number_of_threads=max_number_of_threads)
 
     if isinstance(data_context, InstructionContextData):
         session = _ContentSession(repository, data_context, task_limiter, thread_delay_factor)

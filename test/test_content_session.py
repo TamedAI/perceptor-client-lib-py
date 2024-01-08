@@ -41,12 +41,14 @@ class RepositoryMock(_PerceptorRepository):
 
 _mock_repository = RepositoryMock()
 
+_mock_max_number_of_threads = 4
+
 
 class ContentSessionTests(unittest.IsolatedAsyncioTestCase):
 
     @staticmethod
     def _create_task_limiter() -> TaskLimiter:
-        return TaskLimiter(max_number_of_threads=4)
+        return TaskLimiter(max_number_of_threads=_mock_max_number_of_threads)
 
     @staticmethod
     def _create_default_request() -> PerceptorRequest:
@@ -95,7 +97,7 @@ class ContentSessionTests(unittest.IsolatedAsyncioTestCase):
                                         InstructionMethod.QUESTION,
                                         instructions,
                                         classify_entries=[],
-                                        task_limiter=self._create_task_limiter(),
+                                        max_number_of_threads=_mock_max_number_of_threads,
                                         thread_delay_factor=0
                                         )
 
@@ -135,7 +137,7 @@ class ContentSessionTests(unittest.IsolatedAsyncioTestCase):
                                          InstructionMethod.CLASSIFY,
                                          instructions,
                                          classify_entries=["x"],
-                                         task_limiter=self._create_task_limiter(),
+                                         max_number_of_threads=_mock_max_number_of_threads,
                                          thread_delay_factor=0
                                          ))
 

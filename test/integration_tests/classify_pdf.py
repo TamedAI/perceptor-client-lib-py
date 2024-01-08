@@ -16,7 +16,7 @@ import asyncio
 import logging
 
 from perceptor_client_lib.external_models import PerceptorRequest, InstructionWithResult
-from tests_commons import create_client
+from tests_commons import create_client, run_and_log_exec_time
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -58,4 +58,4 @@ async def run_client_method():
         """)
 
 
-asyncio.run(run_client_method())
+asyncio.run(run_and_log_exec_time(run_client_method))
