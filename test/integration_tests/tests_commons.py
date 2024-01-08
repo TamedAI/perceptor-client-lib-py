@@ -15,6 +15,8 @@
 import json
 import os
 import sys
+from typing import Callable
+import time
 
 PROJECT_PATH = os.getcwd()
 SOURCE_PATH = os.path.join(
@@ -36,4 +38,9 @@ if os.path.exists(_CONF_PATH):
 
 
 def create_client():
-    return perceptor.Client(api_key, api_url)
+    return perceptor.Client(api_key, api_url, max_level_of_parallelization=5 )
+
+async def run_and_log_exec_time(to_exec: Callable):
+    start_time = time.time()
+    await to_exec()
+    print(f"\nexecution time: {time.time() - start_time}")

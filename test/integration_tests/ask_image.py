@@ -14,14 +14,14 @@
 
 import asyncio
 import logging
-from tests_commons import create_client
+from tests_commons import create_client, run_and_log_exec_time
 from perceptor_client_lib.external_models import PerceptorRequest
 
 logging.basicConfig(level=logging.DEBUG)
 
 IMAGE_PATH = "../test_files/invoice.jpg"
 
-perceptor_client = create_client()
+
 
 req: PerceptorRequest = PerceptorRequest(flavor="original", return_scores=True, params={
     "temperature": 0.01,
@@ -33,8 +33,10 @@ req: PerceptorRequest = PerceptorRequest(flavor="original", return_scores=True, 
     "maxLength": 512
 })
 
-
+perceptor_client = create_client()
 async def run_client_method():
+
+
     result = await perceptor_client.ask_image(IMAGE_PATH,
                                               instructions=[
                                                   "What is the invoice number?",
@@ -59,4 +61,4 @@ async def run_client_method():
                 f"for question '{instruction_result.instruction}' following error occurred: {instruction_result.error_text}")
 
 
-asyncio.run(run_client_method())
+asyncio.run(run_and_log_exec_time(run_client_method))
